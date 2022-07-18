@@ -11,4 +11,4 @@ inputs:
     default: ${{ toJson(github) }}
 runs:
   using: 'docker'
-  image: 'docker://ghcr.io/siketyan/automan@sha256:6c9054da67fd2b7d7c85a026fb469e738968e6dbe9115a9737f0850d3a751412'
+  image: 'docker://ghcr.io/siketyan/automan@sha256:48b28b431b4d09a6f2405d36cf84d46b93618052ae38ab37283e4116d2c9bfd9'

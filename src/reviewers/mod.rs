@@ -9,7 +9,7 @@ use serde::Deserialize;
 #[serde(rename_all = "snake_case")]
 pub enum Answer {
     Noop = 0,
-    #[serde(rename = "weak")]
+    #[serde(rename = "reject")]
     WeakReject = 10,
     #[serde(skip)]
     Reject = 20,
