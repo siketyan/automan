@@ -1,0 +1,14 @@
+name: 'Automan'
+author: 'Naoki Ikeguchi'
+description: 'Automatically reviews your pull request.'
+branding:
+  icon: 'check-circle'
+  color: 'green'
+inputs:
+  context:
+    required: true
+    description: 'Context of the workflow run.'
+    default: ${{ toJson(github) }}
+runs:
+  using: 'docker'
+  image: 'ghcr.io/siketyan/automan@sha256:766a8a57f3ecf715d3ac1cdc9a970ac49b4bcab8ee1dddb1080b33982a263bb6'
