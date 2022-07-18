@@ -60,7 +60,7 @@ async fn main() -> Result<()> {
         Event::IssueCommented(e) => reviewers.comment.iter().try_fold(Answer::Noop, |acc, r| {
             r.review(&e)
                 .map(|a| Answer::choose(acc, a))
-                .map_err(Error::new)
+                .map_err(Error::from)
         }),
     }?;
 

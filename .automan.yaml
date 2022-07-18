@@ -1,6 +1,15 @@
 ---
 triggers:
   comment:
-    - content: 'えいや'
+    # Basic match
+    - content: 'Approve me :)'
 
-comment: 'そいや'
+    # Regex
+    - content: '^Hello[,\s]world!?$'
+      regex: true
+
+    # Inverse
+    - content: 'Don't approve me :('
+      inverse: true
+
+comment: 'Reviewed it!'

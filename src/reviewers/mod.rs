@@ -1,6 +1,6 @@
 pub mod comment;
 
-use std::error::Error;
+use core::result::Result;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Answer {
@@ -23,7 +23,7 @@ impl Answer {
 }
 
 pub trait Reviewer<E> {
-    type Error: Error;
+    type Error;
 
     fn review(&self, event: &E) -> Result<Answer, Self::Error>;
 }
