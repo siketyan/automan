@@ -9,7 +9,10 @@ use serde::Deserialize;
 #[serde(rename_all = "snake_case")]
 pub enum Answer {
     Noop = 0,
-    Reject = 10,
+    #[serde(rename = "weak")]
+    WeakReject = 10,
+    #[serde(skip)]
+    Reject = 20,
     Accept = 90,
     ForceAccept = 100,
 }
@@ -66,5 +69,6 @@ mod tests {
         assert_eq!(Accept, Answer::choose(Accept, Noop));
         assert_eq!(Noop, Answer::choose(Noop, Noop));
         assert_eq!(ForceAccept, Answer::choose(Reject, ForceAccept));
+        assert_eq!(Accept, Answer::choose(WeakReject, Accept));
     }
 }
