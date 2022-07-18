@@ -27,6 +27,7 @@ pub struct Triggers {
 pub struct Config {
     pub triggers: Triggers,
     pub comment: String,
+    pub default: Answer,
 }
 
 impl Config {
@@ -72,15 +73,10 @@ async fn main() -> Result<()> {
     let config = Config::from_yaml("./.automan.yaml")?;
     let reviewers = EventReviewers::from(config.triggers);
     let context = Context::from_env()?;
+    let default = config.default;
     let answer = match Event::try_from(&context.event)? {
-        Event::IssueCommented(e) => reviewers
-            .comment
-            .into_iter()
-            .try_fold(Answer::Noop, fold(e)),
-        Event::DescriptionEdited(e) => reviewers
-            .description
-            .into_iter()
-            .try_fold(Answer::Noop, fold(e)),
+        Event::IssueCommented(e) => reviewers.comment.into_iter().try_fold(default, fold(e)),
+        Event::DescriptionEdited(e) => reviewers.description.into_iter().try_fold(default, fold(e)),
     }?;
 
     let event = match answer {

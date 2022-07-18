@@ -5,7 +5,8 @@ use core::result::Result;
 use regex::Regex;
 use serde::Deserialize;
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum Answer {
     Noop = 0,
     Reject = 10,
