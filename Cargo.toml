@@ -17,3 +17,6 @@ url = { version = "2.2", features = ["serde"] }
 
 [dev-dependencies]
 assert_matches = "1.5"
+
+[patch.crates-io]
+octocrab = { git = "https://github.com/siketyan/octocrab.git", rev = "d283ff9" }

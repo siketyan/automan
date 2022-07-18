@@ -163,13 +163,23 @@ mod tests {
     use octocrab::models::events::payload::PullRequestEventAction;
 
     #[test]
-    fn test_deserialize_context() {
-        let json = include_str!("../resources/github-context-sample.json");
+    fn deserialize_pull_request_synchronize() {
+        let json = include_str!("../resources/pull-request-synchronize.json");
         let context: Context = serde_json::from_str(json).unwrap();
 
         assert_eq!("test", context.job);
         assert_matches!(context.event, EventPayload::PullRequestEvent(e) => {
             assert_matches!(e.action, PullRequestEventAction::Synchronize);
+        });
+    }
+
+    #[test]
+    fn deserialize_pull_request_edited() {
+        let json = include_str!("../resources/pull-request-edited.json");
+        let context: Context = serde_json::from_str(json).unwrap();
+
+        assert_matches!(context.event, EventPayload::PullRequestEvent(e) => {
+            assert_matches!(e.action, PullRequestEventAction::Edited);
         });
     }
 }

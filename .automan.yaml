@@ -15,6 +15,7 @@ triggers:
   description:
     # Request changes unless all checkboxes are checked
     - content: '^- ?\[ \]'
+      regex: true
       inverse: true
 
 comment: 'Reviewed it!'
