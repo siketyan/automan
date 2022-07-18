@@ -1,7 +1,7 @@
 use anyhow::Error;
 use serde::Deserialize;
 
-use crate::events::IssueCommented;
+use crate::events::DescriptionEdited;
 use crate::reviewers::{Answer, Reviewer, TextMatch};
 
 #[derive(Deserialize)]
@@ -10,20 +10,20 @@ pub struct Trigger {
     pub text: TextMatch,
 }
 
-pub struct CommentReviewer {
+pub struct DescriptionReviewer {
     trigger: Trigger,
 }
 
-impl From<Trigger> for CommentReviewer {
+impl From<Trigger> for DescriptionReviewer {
     fn from(trigger: Trigger) -> Self {
         Self { trigger }
     }
 }
 
-impl Reviewer<IssueCommented> for CommentReviewer {
+impl Reviewer<DescriptionEdited> for DescriptionReviewer {
     type Error = Error;
 
-    fn review(&self, event: &IssueCommented) -> Result<Answer, Self::Error> {
+    fn review(&self, event: &DescriptionEdited) -> Result<Answer, Self::Error> {
         Ok(match self.trigger.text.matches(&event.content)? {
             true => Answer::Accept,
             _ => Answer::Noop,

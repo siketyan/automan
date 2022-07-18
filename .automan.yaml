@@ -12,4 +12,9 @@ triggers:
     - content: 'Don't approve me :('
       inverse: true
 
+  description:
+    # Request changes unless all checkboxes are checked
+    - content: '^- ?\[ \]'
+      inverse: true
+
 comment: 'Reviewed it!'

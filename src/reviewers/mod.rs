@@ -1,6 +1,9 @@
 pub mod comment;
+pub mod description;
 
 use core::result::Result;
+use regex::Regex;
+use serde::Deserialize;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Answer {
@@ -19,6 +22,29 @@ impl Answer {
         } else {
             Ord::max(a, b)
         }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct TextMatch {
+    content: String,
+    #[serde(default)]
+    regex: bool,
+    #[serde(default)]
+    inverse: bool,
+}
+
+impl TextMatch {
+    pub fn matches(&self, content: &str) -> anyhow::Result<bool> {
+        let ok = match self.regex {
+            true => Regex::new(&self.content)?.is_match(content),
+            _ => content == self.content,
+        };
+
+        Ok(match self.inverse {
+            true => !ok,
+            _ => ok,
+        })
     }
 }
 

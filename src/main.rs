@@ -6,7 +6,7 @@ use std::fs::read_to_string;
 use std::iter::Iterator;
 use std::path::Path;
 
-use anyhow::{Error, Result};
+use anyhow::Result;
 use octocrab::models::events::payload::EventPayload;
 use octocrab::OctocrabBuilder;
 use serde::Deserialize;
@@ -14,11 +14,13 @@ use serde::Deserialize;
 use crate::events::Event;
 use crate::github::{Context, PullRequestReviewEvent, PullRequestReviewHandler};
 use crate::reviewers::comment::CommentReviewer;
+use crate::reviewers::description::DescriptionReviewer;
 use crate::reviewers::{Answer, Reviewer};
 
 #[derive(Deserialize)]
 pub struct Triggers {
     pub comment: Option<Vec<reviewers::comment::Trigger>>,
+    pub description: Option<Vec<reviewers::description::Trigger>>,
 }
 
 #[derive(Deserialize)]
@@ -36,6 +38,7 @@ impl Config {
 #[derive(Default)]
 pub struct EventReviewers {
     pub comment: Vec<CommentReviewer>,
+    pub description: Vec<DescriptionReviewer>,
 }
 
 impl From<Triggers> for EventReviewers {
@@ -47,8 +50,21 @@ impl From<Triggers> for EventReviewers {
                 .into_iter()
                 .map(|t| t.into())
                 .collect(),
+            description: triggers
+                .description
+                .unwrap_or_default()
+                .into_iter()
+                .map(|t| t.into())
+                .collect(),
         }
     }
+}
+
+fn fold<E, R>(e: E) -> impl Fn(Answer, R) -> std::result::Result<Answer, <R as Reviewer<E>>::Error>
+where
+    R: Reviewer<E>,
+{
+    move |acc, r| r.review(&e).map(|a| Answer::choose(acc, a))
 }
 
 #[tokio::main]
@@ -57,11 +73,14 @@ async fn main() -> Result<()> {
     let reviewers = EventReviewers::from(config.triggers);
     let context = Context::from_env()?;
     let answer = match Event::try_from(&context.event)? {
-        Event::IssueCommented(e) => reviewers.comment.iter().try_fold(Answer::Noop, |acc, r| {
-            r.review(&e)
-                .map(|a| Answer::choose(acc, a))
-                .map_err(Error::from)
-        }),
+        Event::IssueCommented(e) => reviewers
+            .comment
+            .into_iter()
+            .try_fold(Answer::Noop, fold(e)),
+        Event::DescriptionEdited(e) => reviewers
+            .description
+            .into_iter()
+            .try_fold(Answer::Noop, fold(e)),
     }?;
 
     let event = match answer {
